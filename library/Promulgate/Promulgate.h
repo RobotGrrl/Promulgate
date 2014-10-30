@@ -22,8 +22,8 @@ All text above must be included in any redistribution
 	#include "WProgram.h"
 #endif
 
-#include "Stream.h"
-#include <Streaming.h>
+#include "Streaming.h"
+#include <Stream.h>
 
 #ifndef _PROMULGATE_H_
 #define _PROMULGATE_H_
@@ -32,6 +32,7 @@ class Promulgate {
 
 	public:
 
+		Promulgate();
 		Promulgate(Stream *in, Stream *out);
 
 		enum Level {

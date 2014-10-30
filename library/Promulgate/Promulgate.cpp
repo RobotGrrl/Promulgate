@@ -15,6 +15,10 @@ All text above must be included in any redistribution
 
 #include "Promulgate.h"
 
+Promulgate::Promulgate() {
+  
+}
+
 
 Promulgate::Promulgate(Stream *in, Stream *out) {
   in_stream = in;

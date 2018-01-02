@@ -169,6 +169,145 @@ void Promulgate::organize_message(char c) {
 }
 
 
+// This is a revised parser by David Kavanagh to handle receiving 
+// base64 encoded messages (for example, from a computer).
+// Also uses fixed length for the parsing.
+void Promulgate::parse_message64(char msg[], uint8_t len) {
+ 
+ //if(LOG_LEVEL >= DEBUG) *debug_stream << "parsing message" << endl;
+ 
+ if(len < 3) return; // we are not looking for short messages...
+
+ char binary[64];
+ char tmp[len];
+ // extract encoded packet from between $ and !
+ for (int i=1; i<(len-1); i++) {
+   tmp[i-1] = msg[i];
+ }
+ unsigned int b64_len = decode_base64(tmp, binary);
+ if (b64_len > 0) {
+   Serial << "b64 length = " << b64_len << " data " << binary << endl;
+   msg = binary;
+   len = b64_len;
+ }
+ // get the action specifier
+ char action = msg[0];
+ 
+ if(action != '0') {
+
+   *debug_stream << "msg : ";
+   char buf [2];
+   for (int i=0; i<len; ++i) {
+     sprintf(buf, "%02x", (char)(msg[i]));
+     *debug_stream << buf << ':';
+   }
+   *debug_stream << "\n";
+   
+   // get the command
+   char cmd = msg[1];
+   
+   // find the , to see if there is a value for the key
+   uint8_t comma = 0;
+   for(uint8_t i=2; i<len-2; i++) {
+     if(msg[i] == ',') {
+       comma = i;
+       break;
+     }
+   }
+   
+   // there is no val
+   boolean find_val = true;
+   if(comma == 0) {
+     comma = len-1;
+     find_val = false;
+   }
+   
+   // get the key number
+   uint8_t key = msg[2];
+   uint8_t lb = 2; // index of leading digit
+   uint8_t ub = comma-1; // index of last digit
+   
+   //for(uint8_t i=lb; i<=ub; i++) {
+   //  key += ( msg[lb + (i-lb)] - '0') * pow(10, ub-i);
+   //}
+   Serial << "key1 = " << key << endl;
+
+   // find the next ,
+   uint8_t comma2 = comma;
+   for(uint8_t i=comma+1; i<len-2; i++) {
+     if(msg[i] == ',') {
+       comma2 = i;
+       break;
+     }
+   }
+
+   // get the val number
+   uint16_t val = msg[comma+1] + (msg[comma+2] * 256);
+   lb = comma+1;
+   ub = comma2-1;
+
+   //if(find_val) {
+   //  for(uint8_t i=lb; i<=ub; i++) {
+   //    val += ( msg[lb + (i-lb)] - '0' ) * pow(10, ub-i);
+   //  }
+   //}
+   Serial << "val1 = " << val << endl;
+   
+   // get the 2nd command
+   char cmd2 = msg[comma2+1];
+
+   // find the 3rd ,
+   uint8_t comma3 = comma2;
+   for(uint8_t i=comma2+1; i<len-2; i++) {
+     if(msg[i] == ',') {
+       comma3 = i;
+       break;
+     }
+   }
+
+   // get the 2nd key number
+   uint8_t key2 = msg[comma2+2];
+   lb = comma2+2; // index of leading digit
+   ub = comma3-1; // index of last digit
+   
+   //for(uint8_t i=lb; i<=ub; i++) {
+   //  key2 += ( msg[lb + (i-lb)] - '0') * pow(10, ub-i);
+   //}
+   Serial << "key2 = " << key2 << endl;
+
+   // get the 2nd val number
+   uint16_t val2 = msg[comma3+1] + (msg[comma3+2] * 256);
+   lb = comma3+1;
+   ub = len-2;
+
+   //for(uint8_t i=lb; i<=ub; i++) {
+   //  val2 += ( msg[lb + (i-lb)] - '0' ) * pow(10, ub-i);
+   //}
+   Serial << "val2 = " << val2 << endl;
+   
+   // get the delimeter
+   char delim = msg[len-1];
+   
+   // print it for debugging
+   
+   if(LOG_LEVEL >= DEBUG) {
+     *debug_stream << "---RECEIVED---" << endl;
+     *debug_stream << "Action specifier: " << action << endl;
+     *debug_stream << "Command: " << cmd << endl;
+     *debug_stream << "Key: " << key << endl;
+     *debug_stream << "Value: " << val << endl;
+     *debug_stream << "Command2: " << cmd2 << endl;
+     *debug_stream << "Key2: " << key2 << endl;
+     *debug_stream << "Value2: " << val2 << endl;
+     *debug_stream << "Delim: " << delim << endl;
+   }
+   
+   _rxCallback(action, cmd, key, val, cmd2, key2, val2, delim);
+   
+ }
+
+}
+
 
 // Core Actions
 

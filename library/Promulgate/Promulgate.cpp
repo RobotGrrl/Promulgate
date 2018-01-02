@@ -16,7 +16,7 @@ All text above must be included in any redistribution
 #include "Promulgate.h"
 
 Promulgate::Promulgate() {
-  
+  use_base64_parsing = false;
 }
 
 
@@ -48,6 +48,10 @@ void Promulgate::set_rx_callback( void (*rxCallback)(char action, char cmd, uint
 
 void Promulgate::set_tx_callback( void (*txCallback)() ) {
   _txCallback = txCallback;
+}
+
+void Promulgate::useBase64Parsing(bool b) {
+  use_base64_parsing = b;
 }
 
 
@@ -150,7 +154,11 @@ void Promulgate::organize_message(char c) {
     // check for the delimeter
     if(c == '!' || c == '?' || c == ';') {
       reading_message = false;
-      parse_message(ser, ser_len);
+      if(use_base64_parsing) {
+        parse_message(ser, ser_len);
+      } else {
+        parse_message64(ser, ser_len);
+      }
       reset_buffer();
     }
     

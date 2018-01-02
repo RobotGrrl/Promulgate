@@ -51,6 +51,7 @@ class Promulgate {
 		void set_debug_stream(Stream *db);
 		void set_rx_callback( void (*rxCallback)(char action, char cmd, uint8_t key, uint16_t val, char delim) );
 		void set_tx_callback( void (*txCallback)() );
+		void useBase64Parsing(bool b);
 
 		void parse_message(char msg[], uint8_t len);
 		void organize_message(char c);
@@ -64,6 +65,7 @@ class Promulgate {
 		boolean          reading_message;
 		char             ser[20];
 		uint8_t          ser_len;
+		bool             use_base64_parsing;
 
 		Stream *in_stream;
 		Stream *out_stream;

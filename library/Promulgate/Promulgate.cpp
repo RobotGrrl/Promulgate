@@ -55,7 +55,7 @@ void Promulgate::set_tx_callback( void (*txCallback)() ) {
 
 void Promulgate::parse_message(char msg[], uint8_t len) {
   
-  if(LOG_LEVEL <= DEBUG) *debug_stream << "parsing message" << endl;
+  //if(LOG_LEVEL >= DEBUG) *debug_stream << "parsing message" << endl;
   
   if(len < 3) return; // we are not looking for short messages...
   
@@ -109,6 +109,7 @@ void Promulgate::parse_message(char msg[], uint8_t len) {
     char delim = msg[len-1];
     
     // print it for debugging
+    
     if(LOG_LEVEL >= DEBUG) {
       *debug_stream << "---RECEIVED---" << endl;
       *debug_stream << "Action specifier: " << action << endl;
@@ -117,7 +118,7 @@ void Promulgate::parse_message(char msg[], uint8_t len) {
       *debug_stream << "Value: " << val << endl;
       *debug_stream << "Delim: " << delim << endl;
     }
-   
+    
 
     if(action == '~') {
       core_action(cmd, key, val, delim);
@@ -154,7 +155,6 @@ void Promulgate::organize_message(char c) {
     }
     
   }
-
 
   if(ser_len >= 19) {
     // something bad has happened if we are here...

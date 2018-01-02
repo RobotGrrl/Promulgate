@@ -40,7 +40,7 @@ class Promulgate {
 		  WARN,
 		  INFO,
 		  DEBUG
-		};
+		} the_level;
 
 		Level LOG_LEVEL;
 
@@ -66,12 +66,12 @@ class Promulgate {
 		Stream *out_stream;
 		Stream *debug_stream;
 
-		typedef enum Outputter {
-		  HARDWARE_SERIAL,
-		  SOFTWARE_SERIAL
-		};
+		// typedef enum Outputter {
+		//   HARDWARE_SERIAL,
+		//   SOFTWARE_SERIAL
+		// };
 
-		Outputter        OUTPUT_METHOD;
+		// Outputter        OUTPUT_METHOD;
 
 		void begin();
 		void reset_buffer();
